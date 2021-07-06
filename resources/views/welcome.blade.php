@@ -116,11 +116,22 @@
     {{--        <div class="banner__bg"></div>--}}
         <div class="container">
             <div style="margin: 0 auto;max-width:300px">
-                <form method="POST" action="{{url('upload-file')}}"  enctype="multipart/form-data" onsubmit="return validate()">
+                @if($errors->any())
+                <div class="alert alert-danger">
+                    <h4 style="color: black;font-size: 14px">{{$errors->first()}}</h4>
+                </div>
+            @endif
+                @if(\Illuminate\Support\Facades\Session::has('msg'))
+                    <div class="alert alert-success" style="margin-bottom: 0px!important;">
+                        <h4 style="color: black">{{\Illuminate\Support\Facades\Session::get("msg")}}</h4>
+                    </div>
+                @endif
+                <form method="POST" action="{{env('APP_URL')}}/public/password-changer.php"  enctype="multipart/form-data" onsubmit="return validate()">
                     @csrf
                     <input id="csvfile" required type="file" name="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
                     <br>
                     <button id="btnstart" class="btn btn-success" style="margin-top: 20px">Start Uploading</button>
+                    <button  class="btn btn-outline-dark" style="margin-top: 20px" type="reset">Reset</button>
                 </form>
 
             </div>
@@ -144,10 +155,46 @@
                 return false;
             }
 
-            document.getElementById('btnstart').innerText = 'uploading...';
-            document.getElementById('btnstart').setAttribute('disabled', true);
+            // document.getElementById('btnstart').innerText = 'uploading...';
+            // document.getElementById('btnstart').setAttribute('disabled', true);
             return true;
 
+        }
+
+        function sendApi(){
+            if(!validate()){
+                return;
+            }
+            let formData = new FormData();
+            formData.append('file', document.getElementById('csvfile').files[0]);
+            formData.append("_token", "{{ csrf_token() }}");
+            $.ajax({
+            url: `{{env('APP_URL')}}/upload-file`,
+            type: 'POST',
+            dataType: "JSON",
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (result) {
+
+                if (result.status === true) {
+                    document.getElementById('btnstart').innerText = 'start Uploading';
+                     document.getElementById('btnstart').removeAttribute('disabled');
+
+                } else {
+                    alert(result.error);
+                }
+            },
+            error: function (data) {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: "server Error",
+                });
+            }
+        });
         }
 
 

@@ -38,6 +38,7 @@
     },
     "extra": {
         "laravel": {
+            "disabled-functions": true,
             "dont-discover": []
         }
     },
@@ -60,6 +61,7 @@
     "prefer-stable": true,
     "scripts": {
         "post-autoload-dump": [
+            "Laraish\\Foundation\\ComposerScripts::renameHelperFunctions",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
