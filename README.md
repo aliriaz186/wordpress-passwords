@@ -1,2 +1,2 @@
-# wordpress-passwords
-wordpress-passwords
+# products-table
+products-table
