@@ -126,7 +126,7 @@
                         <h4 style="color: black">{{\Illuminate\Support\Facades\Session::get("msg")}}</h4>
                     </div>
                 @endif
-                <form method="POST" action="{{env('APP_URL')}}/public/password-changer.php"  enctype="multipart/form-data" onsubmit="return validate()">
+                <form method="POST" action="{{url('upload-file')}}"  enctype="multipart/form-data" onsubmit="return validate()">
                     @csrf
                     <input id="csvfile" required type="file" name="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
                     <br>

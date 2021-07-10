@@ -21,7 +21,7 @@ use services\email_services\MailConf;
 use services\email_services\PhpMail;
 use services\email_services\SendEmailService;
 // include url('') . '/wordpress/wp-load.php';
-require($_SERVER['DOCUMENT_ROOT']."\wordpress\wp-load.php");
+// require("https://pmsrv1.mywebpreview.co.uk/wp-load.php");
 
 // include 'http://127.0.0.1:8000/wordpress/wp-load.php';
 
@@ -31,7 +31,6 @@ class AuthController extends Controller
 
 
             try{
-                // return $_SERVER['DOCUMENT_ROOT']."\wordpress\wp-load.php";
                 set_time_limit(360000);
                 $csvModal = new CSVModal();
                 \Excel::import($csvModal, request()->file('file'));
@@ -40,8 +39,8 @@ class AuthController extends Controller
                 $newList = [];
                 foreach ($dataList as $data) {
 
-                    $user = get_user_by( 'login', $data['user'] );
-                    return $user;
+                    // $user = get_user_by( 'login', 'aliriaz186' );
+                    // return json_encode($user);
                     $password = $data['password'];
                     $new_password = $this->randomPassword(24,1,"lower_case,upper_case,special_symbols")[0];
 
