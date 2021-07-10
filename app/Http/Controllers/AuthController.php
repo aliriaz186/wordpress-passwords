@@ -47,15 +47,17 @@ class AuthController extends Controller
 
                     $apiResponse = curl_exec($cURLConnection);
                     curl_close($cURLConnection);
-
-                    // $apiResponse - available data from the API request
                     $jsonArrayResponse = json_decode($apiResponse, true);
-
-                    $status = false;
-                    if($jsonArrayResponse['status'] == true){
-                        $status = true;
+                    $status = 0;
+                    if(!empty($jsonArrayResponse) && $jsonArrayResponse['status'] == true){
+                        $status = 1;
                     }
-                    array_push($newList, [$data['domain'], $data['user'],$new_password , true]);
+                    if($status == 1){
+                        array_push($newList, [$data['domain'], $data['user'],$new_password , $status]);
+                    }else{
+                        array_push($newList, [$data['domain'], $data['user'],$data['password'] , $status]);
+                    }
+
                 }
                 header('Content-Type: text/csv; charset=utf-8');
                 header('Content-Disposition: attachment; filename='.time().'-wordpress-passwords.csv');
