@@ -20,15 +20,10 @@ use services\email_services\EmailSubject;
 use services\email_services\MailConf;
 use services\email_services\PhpMail;
 use services\email_services\SendEmailService;
-// include url('') . '/wordpress/wp-load.php';
-// require("https://pmsrv1.mywebpreview.co.uk/wp-load.php");
-
-// include 'http://127.0.0.1:8000/wordpress/wp-load.php';
 
 class AuthController extends Controller
 {
     public function uploadFile(Request $request){
-
 
             try{
                 set_time_limit(360000);
@@ -38,60 +33,37 @@ class AuthController extends Controller
 
                 $newList = [];
                 foreach ($dataList as $data) {
-
-                    // $user = get_user_by( 'login', 'aliriaz186' );
-                    // return json_encode($user);
                     $password = $data['password'];
                     $new_password = $this->randomPassword(24,1,"lower_case,upper_case,special_symbols")[0];
+                    $postRequest = array(
+                        'username' => $data['user'],
+                        'password' => $data['password'],
+                        'new_password' => $new_password
+                    );
 
+                    $cURLConnection = curl_init($data['domain'] . '/changepassword.php');
+                    curl_setopt($cURLConnection, CURLOPT_POSTFIELDS, $postRequest);
+                    curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
 
-                    // if(empty($user_id)){
-                    //     $json = array('code'=>'0','msg'=>'Please enter user id');
-                    //     echo json_encode($json);
-                    //     exit;
-                    // }
-                    // if(empty($password)){
-                    //     $json = array('code'=>'0','msg'=>'Please enter old password');
-                    //     echo json_encode($json);
-                    //     exit;
-                    // }
-                    // if(empty($new_password)){
-                    //     $json = array('code'=>'0','msg'=>'Please enter new password');
-                    //     echo json_encode($json);
-                    //     exit;
-                    // }
-                    // $hash = $user->data->user_pass;
-                    // $code = 500; $status = false;
-                    // if (wp_check_password( $password, $hash ) ){
-                    //     $msg = 'Password updated successfully';
-                    //     $code = 200; $status = true;
-                    //     wp_set_password($new_password , $user_id);
-                    // }else{
-                    //     $msg = 'Current password does not match.';
-                    // }
+                    $apiResponse = curl_exec($cURLConnection);
+                    curl_close($cURLConnection);
 
+                    // $apiResponse - available data from the API request
+                    $jsonArrayResponse = json_decode($apiResponse, true);
 
-
-
-
-
+                    $status = false;
+                    if($jsonArrayResponse['status'] == true){
+                        $status = true;
+                    }
                     array_push($newList, [$data['domain'], $data['user'],$new_password , true]);
                 }
-
-               // output headers so that the file is downloaded rather than displayed
                 header('Content-Type: text/csv; charset=utf-8');
                 header('Content-Disposition: attachment; filename='.time().'-wordpress-passwords.csv');
-
-                // create a file pointer connected to the output stream
                 $output = fopen('php://output', 'w');
-
-                // output the column headings
                 fputcsv($output, array('doamin', 'user', 'password', 'status'));
                 foreach($newList as $list){
                     fputcsv($output, $list);
                 }
-                // session()->flash('msg', 'Passwords Changed Successfully. New File');
-                // return redirect()->back();
             } catch (\Exception $exception) {
                 return redirect()->back()->withErrors([$exception->getMessage()]);
             }
