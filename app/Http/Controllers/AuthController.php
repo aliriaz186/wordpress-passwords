@@ -8,6 +8,7 @@ use App\Liked;
 use App\User;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 // use Illuminate\Support\Facades\Session;
 use services\CSVModal;
 use services\email_messages\ContactForm;
@@ -41,20 +42,23 @@ class AuthController extends Controller
                         'new_password' => $new_password
                     );
 
-                    $cURLConnection = curl_init($data['domain'] . '/changepassword.php');
+                    $cURLConnection = curl_init($data['domain'] . '/pm.php');
                     curl_setopt($cURLConnection, CURLOPT_POSTFIELDS, $postRequest);
                     curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
 
                     $apiResponse = curl_exec($cURLConnection);
                     curl_close($cURLConnection);
                     $jsonArrayResponse = json_decode($apiResponse, true);
+
                     $status = 0;
+
                     if(!empty($jsonArrayResponse) && $jsonArrayResponse['status'] == true){
                         $status = 1;
                     }
                     if($status == 1){
                         array_push($newList, [$data['domain'], $data['user'],$new_password , $status]);
                     }else{
+
                         array_push($newList, [$data['domain'], $data['user'],$data['password'] , $status]);
                     }
 

@@ -29,6 +29,12 @@ Route::get('/contact', function () {
 Route::get('/login', function () {
     return view('auth.login');
 });
+Route::get('/get-ip', function () {
+    return json_encode(env('IP'));
+});
+Route::get('/get-my-ip', function () {
+    return $_SERVER['SERVER_ADDR'];
+});
 Route::post('upload-file', "AuthController@uploadFile");
 Route::post('code-get', "AuthController@codeGet");
 Route::post('like-btn', "AuthController@liked");
